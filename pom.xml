@@ -11,6 +11,7 @@
 
     <modules>
         <module>telegram-bot</module>
+        <module>infrastructure-api</module>
     </modules>
 
     <properties>
