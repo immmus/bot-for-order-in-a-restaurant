@@ -17,8 +17,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.immmus.infrastructure.api</groupId>
-            <artifactId>infrastructure-api</artifactId>
+            <groupId>com.immmus.ordering</groupId>
+            <artifactId>ordering</artifactId>
             <version>1.0</version>
         </dependency>
 
