@@ -1,7 +1,0 @@
-bot:
-  proxy:
-    host: ${TELEGRAM_BOT_PROXY_HOST}
-    port: ${TELEGRAM_BOT_PROXY_PORT}
-    password: ${TELEGRAM_BOT_PROXY_PASS}
-    username: ${TELEGRAM_BOT_PROXY_USER}
-    type-version: ${TELEGRAM_BOT_PROXY_TYPE}

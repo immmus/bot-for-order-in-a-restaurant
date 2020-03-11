@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
@@ -14,17 +15,17 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
-import java.util.stream.Stream;
+import java.util.List;
 
 import static org.telegram.telegrambots.bots.DefaultBotOptions.ProxyType;
 
 @Configuration
-@PropertySource("classpath:telegram-bot-config.yml")
+@PropertySource(value = "classpath:/telegram-bot-config.properties")
 public class BotConfig {
     private static final String defaultProxyType = ProxyType.SOCKS5.name();
     private static final Logger log = LoggerFactory.getLogger(BotConfig.class);
 
-    static class Type {
+    public static class Type {
         public final static String FREE_PROXY_BOT = "BotWithFreeProxy";
         public final static String PRIVATE_PROXY_BOT = "BotWithPrivateProxy";
         public final static String DEFAULT_BOT = "defaultBot";
@@ -39,8 +40,9 @@ public class BotConfig {
     @Value("${bot.proxy.port}")
     private Integer proxyPort;
     @Value("${bot.proxy.type-version}")
-    private String proxyType = defaultProxyType;
+    private String proxyType;
 
+    @Lazy
     @Bean(name = Type.PRIVATE_PROXY_BOT)
     public Bot privateProxyBot() throws TelegramApiRequestException {
         Authenticator.setDefault(new Authenticator() {
@@ -57,6 +59,7 @@ public class BotConfig {
         return privateProxyBot;
     }
 
+    @Lazy
     @Bean(name = Type.FREE_PROXY_BOT)
     public Bot freeProxyBot() throws TelegramApiRequestException {
         final var api = new TelegramBotsApi();
@@ -87,12 +90,8 @@ public class BotConfig {
             defaultBotOptions.setProxyType(ProxyType.HTTP);
         } else {
             log.warn("Set incorrect proxy type - {}.", proxyType);
-            log.warn("Please use one of types - {}",
-                    Stream.of(
-                            ProxyType.SOCKS5,
-                            ProxyType.SOCKS4,
-                            ProxyType.HTTP
-                    ).map(ProxyType::name).toArray());
+            log.warn("Please use one of types - {}", List.of(ProxyType.SOCKS5, ProxyType.SOCKS4, ProxyType.HTTP));
+
             return ApiContext.getInstance(DefaultBotOptions.class);
         }
 
