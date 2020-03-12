@@ -103,8 +103,8 @@ public class BotConfig {
         final String botToken = bot.getBotToken();
 
         if (botUsername != null
-                && !botUsername.equals("unknown")
                 && botToken != null
+                && !botUsername.equals("unknown")
                 && !botToken.equals("unknown")) {
 
             final var api = new TelegramBotsApi();

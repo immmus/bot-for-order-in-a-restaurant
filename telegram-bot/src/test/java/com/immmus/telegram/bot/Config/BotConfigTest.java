@@ -39,6 +39,10 @@ public class BotConfigTest {
     @Autowired
     @Qualifier(BotConfig.Type.FREE_PROXY_BOT)
     private Bot freeProxyBot;
+    @Autowired
+    @Qualifier(BotConfig.Type.PRIVATE_PROXY_BOT)
+    private Bot privateProxyBot;
+
     @Value("${bot.token}")
     private String token;
     @Value("${bot.name}")
@@ -46,10 +50,16 @@ public class BotConfigTest {
 
     @Test
     public void testAutowireBot() {
-        final String botToken = freeProxyBot.getBotToken();
-        final String botUsername = freeProxyBot.getBotUsername();
+        final String freeBotToken = freeProxyBot.getBotToken();
+        final String freeBotUsername = freeProxyBot.getBotUsername();
 
-        assertThat(botToken).isEqualTo(token);
-        assertThat(botUsername).isEqualTo(name);
+        final String privateBotToken = privateProxyBot.getBotToken();
+        final String privateBotUsername = privateProxyBot.getBotUsername();
+
+        assertThat(freeBotToken).isEqualTo(token);
+        assertThat(freeBotUsername).isEqualTo(name);
+
+        assertThat(privateBotToken).isEqualTo(token);
+        assertThat(privateBotUsername).isEqualTo(name);
     }
 }
