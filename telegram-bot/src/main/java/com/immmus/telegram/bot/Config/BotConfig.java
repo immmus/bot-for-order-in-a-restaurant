@@ -12,6 +12,7 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.generics.LongPollingBot;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -44,7 +45,7 @@ public class BotConfig {
 
     @Lazy
     @Bean(name = Type.PRIVATE_PROXY_BOT)
-    public Bot privateProxyBot() throws TelegramApiRequestException {
+    public Bot privateProxyBot() {
         Authenticator.setDefault(new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -52,19 +53,17 @@ public class BotConfig {
             }
         });
 
-        final var api = new TelegramBotsApi();
         final Bot privateProxyBot = new Bot(getDefaultOpt());
-        api.registerBot(privateProxyBot);
+        registerBot(privateProxyBot);
 
         return privateProxyBot;
     }
 
     @Lazy
     @Bean(name = Type.FREE_PROXY_BOT)
-    public Bot freeProxyBot() throws TelegramApiRequestException {
-        final var api = new TelegramBotsApi();
+    public Bot freeProxyBot() {
         final Bot freeProxyBot = new Bot(getDefaultOpt());
-        api.registerBot(freeProxyBot);
+        registerBot(freeProxyBot);
 
         return freeProxyBot;
     }
@@ -97,5 +96,25 @@ public class BotConfig {
 
         log.info("Set {} proxy type", proxyType);
         return defaultBotOptions;
+    }
+
+    private void registerBot(LongPollingBot bot) {
+        final String botUsername = bot.getBotUsername();
+        final String botToken = bot.getBotToken();
+
+        if (botUsername != null
+                && !botUsername.equals("unknown")
+                && botToken != null
+                && !botToken.equals("unknown")) {
+
+            final var api = new TelegramBotsApi();
+            try {
+                api.registerBot(bot);
+            } catch (TelegramApiRequestException e) {
+                log.error("There was a problem registering the bot. {}", e.getMessage());
+            }
+        } else {
+            log.warn("This bot were'nt registered! Check bot_name and bot_token.");
+        }
     }
 }
