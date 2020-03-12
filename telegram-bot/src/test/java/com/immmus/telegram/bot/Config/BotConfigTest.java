@@ -13,6 +13,7 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/** Перед запуском теста необходимо задать параметры в test-config.properties **/
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = BotConfig.class)
 @TestPropertySource(locations = "/test-telegram-bot-config.properties")
@@ -26,8 +27,6 @@ public class BotConfigTest {
     @Value("${bot.proxy.type-version}")
     private String proxyType;
 
-
-    /** Перед запуском теста необходимо задать параметры в test-config.properties **/
     @Test
     public void testSetProxyOpts() {
         final DefaultBotOptions defaultOpt = config.getDefaultOpt();
