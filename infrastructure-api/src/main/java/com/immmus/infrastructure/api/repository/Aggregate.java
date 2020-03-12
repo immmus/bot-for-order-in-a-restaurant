@@ -1,4 +1,4 @@
-package com.immmus.infrastructure.api.domain;
+package com.immmus.infrastructure.api.repository;
 
 import java.util.function.BiFunction;
 

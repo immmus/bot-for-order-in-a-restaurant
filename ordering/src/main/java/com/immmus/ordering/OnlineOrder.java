@@ -1,6 +1,6 @@
 package com.immmus.ordering;
 
-import com.immmus.infrastructure.api.domain.Aggregate;
+import com.immmus.infrastructure.api.repository.Aggregate;
 import com.immmus.infrastructure.api.domain.Position;
 
 import java.util.List;
