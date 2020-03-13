@@ -1,15 +1,24 @@
 package com.immmus.infrastructure.api.domain;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
+
+@ToString
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MenuPosition implements Position {
+
+    private double price;
+    private String name;
 
     @Override
     public double price() {
-        return 0;
+        return this.price;
     }
 
     @Override
     public String name() {
-        return null;
+        return this.name;
     }
 
     public static Position.Builder<MenuPosition> builder() {
@@ -17,20 +26,24 @@ public class MenuPosition implements Position {
     }
 
     public final static class PositionBuilder implements Position.Builder<MenuPosition> {
+        private double price;
+        private String name;
 
         @Override
         public Builder<? extends Position> price(double price) {
-            return null;
+            this.price = price;
+            return this;
         }
 
         @Override
         public Builder<? extends Position> name(String name) {
-            return null;
+            this.name = name;
+            return this;
         }
 
         @Override
         public MenuPosition create() {
-            return null;
+            return new MenuPosition(price, name);
         }
     }
 }

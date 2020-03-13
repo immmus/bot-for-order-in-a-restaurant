@@ -1,6 +1,6 @@
 package com.immmus.telegram.bot.service;
 
-import com.immmus.infrastructure.api.domain.ChatService;
+import com.immmus.infrastructure.api.service.ChatService;
 import com.immmus.infrastructure.api.domain.Menu;
 import com.immmus.infrastructure.api.domain.Position;
 import lombok.AccessLevel;
