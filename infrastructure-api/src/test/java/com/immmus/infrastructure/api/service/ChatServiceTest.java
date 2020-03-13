@@ -3,7 +3,7 @@ package com.immmus.infrastructure.api.service;
 import com.immmus.infrastructure.api.domain.Menu;
 import com.immmus.infrastructure.api.domain.MenuPosition;
 import com.immmus.infrastructure.api.domain.Position;
-import com.immmus.infrastructure.api.domain.TestMenu;
+import com.immmus.infrastructure.api.domain.MenuForTest;
 import org.junit.Test;
 
 import static com.immmus.infrastructure.api.domain.Position.Builder;
@@ -20,9 +20,9 @@ public class ChatServiceTest {
                 positionBuilder.name("Суп").price(21.50).create(),
                 positionBuilder.name("Мясо").price(130).create());
 
-        Menu<Position> menu = new TestMenu(positions);
+        Menu<Position> menu = new MenuForTest(positions);
 
-        final TestChatService service = ChatService.createService(menu, TestChatService.class);
+        final ChatServiceForTest service = ChatService.createService(menu, ChatServiceForTest.class);
         final List<Position> currentMenuPositions = service.getCurrentMenuPositions();
 
         assertThat(positions).isEqualTo(currentMenuPositions);
