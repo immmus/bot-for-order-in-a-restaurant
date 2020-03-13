@@ -7,7 +7,7 @@
     <groupId>com.immmus</groupId>
     <artifactId>bot-for-order-in-a-restaurant</artifactId>
     <packaging>pom</packaging>
-    <version>${application.version}</version>
+    <version>1.0</version>
 
     <modules>
         <module>telegram-bot</module>
@@ -18,7 +18,6 @@
 
     <properties>
         <java.version>11</java.version>
-        <application.version>1.0</application.version>
         <lombok.version>1.18.12</lombok.version>
         <spring.boot.version>2.2.5.RELEASE</spring.boot.version>
         <!--Logging-->

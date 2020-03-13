@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.immmus.infrastructure.api</groupId>
             <artifactId>infrastructure-api</artifactId>
-            <version>${application.version}</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
