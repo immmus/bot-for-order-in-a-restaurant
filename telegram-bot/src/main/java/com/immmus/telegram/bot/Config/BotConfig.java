@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -32,6 +33,10 @@ public class BotConfig {
         public final static String DEFAULT_BOT = "defaultBot";
     }
 
+    @Value("${bot.name}")
+    private String botName;
+    @Value("${bot.token}")
+    private String botToken;
     @Value("${bot.proxy.username}")
     private String username;
     @Value("${bot.proxy.password}")
@@ -53,7 +58,7 @@ public class BotConfig {
             }
         });
 
-        final Bot privateProxyBot = new Bot(getDefaultOpt());
+        final Bot privateProxyBot = new Bot(getDefaultOpt(), botName, botToken);
         registerBot(privateProxyBot);
 
         return privateProxyBot;
@@ -62,15 +67,18 @@ public class BotConfig {
     @Lazy
     @Bean(name = Type.FREE_PROXY_BOT)
     public Bot freeProxyBot() {
-        final Bot freeProxyBot = new Bot(getDefaultOpt());
+        final Bot freeProxyBot = new Bot(getDefaultOpt(), botName, botToken);
         registerBot(freeProxyBot);
 
         return freeProxyBot;
     }
 
+    @Lazy
     @Bean(name = Type.DEFAULT_BOT)
     public Bot defaultBot() {
-        return new Bot();
+        final Bot defaultBot = new Bot(botName, botName);
+        registerBot(defaultBot);
+        return defaultBot;
     }
 
     DefaultBotOptions getDefaultOpt() {
@@ -102,8 +110,8 @@ public class BotConfig {
         final String botUsername = bot.getBotUsername();
         final String botToken = bot.getBotToken();
 
-        if (botUsername != null
-                && botToken != null
+        if (!StringUtils.isEmpty(botUsername)
+                && !StringUtils.isEmpty(botToken)
                 && !botUsername.equals("unknown")
                 && !botToken.equals("unknown")) {
 
@@ -112,6 +120,7 @@ public class BotConfig {
                 api.registerBot(bot);
             } catch (TelegramApiRequestException e) {
                 log.error("There was a problem registering the bot. {}", e.getMessage());
+                System.exit(1);
             }
         } else {
             log.warn("This bot were'nt registered! Check bot_name and bot_token.");
