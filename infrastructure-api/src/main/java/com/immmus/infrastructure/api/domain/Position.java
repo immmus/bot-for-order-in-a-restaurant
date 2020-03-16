@@ -1,6 +1,10 @@
 package com.immmus.infrastructure.api.domain;
 
-public interface Position {
+import com.immmus.infrastructure.api.repository.HasId;
+import lombok.NonNull;
+
+public interface Position extends HasId {
+
     double price();
 
     String name();
@@ -15,9 +19,9 @@ public interface Position {
 
     interface Builder<P extends Position> {
         Builder<? extends Position> price(double price);
-        Builder<? extends Position> name(String name);
-        Builder<? extends Position> category(Category name);
-        Builder<? extends Position> description(String description);
+        Builder<? extends Position> name(@NonNull String name);
+        Builder<? extends Position> category(@NonNull Category name);
+        Builder<? extends Position> description(@NonNull String description);
         P create();
     }
 }
