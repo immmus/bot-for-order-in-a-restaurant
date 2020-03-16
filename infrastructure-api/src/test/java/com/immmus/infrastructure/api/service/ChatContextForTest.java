@@ -6,7 +6,7 @@ import com.immmus.infrastructure.api.domain.Position;
 import java.util.Collections;
 import java.util.List;
 
-public class ChatServiceForTest implements ChatService {
+public class ChatContextForTest implements ChatContext {
     private List<Position> currentMenuPositions = null;
 
     @Override

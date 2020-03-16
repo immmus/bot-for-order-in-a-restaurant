@@ -6,9 +6,9 @@ import com.immmus.infrastructure.api.domain.Position;
 
 import java.lang.reflect.Constructor;
 
-public interface ChatService {
+public interface ChatContext {
 
-    static <CS extends ChatService> CS createService(final Menu<Position> menu, final Class<CS> classService) {
+    static <CS extends ChatContext> CS createContext(final Menu<Position> menu, final Class<CS> classService) {
         try {
             final Constructor<CS> ctor = classService.getDeclaredConstructor();
             ctor.setAccessible(true);

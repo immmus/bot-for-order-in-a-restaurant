@@ -10,6 +10,8 @@ public class MenuPosition implements Position {
 
     private double price;
     private String name;
+    private Category category;
+    private String description;
 
     @Override
     public double price() {
@@ -21,6 +23,16 @@ public class MenuPosition implements Position {
         return this.name;
     }
 
+    @Override
+    public Category category() {
+        return this.category;
+    }
+
+    @Override
+    public String description() {
+        return this.description;
+    }
+
     public static Position.Builder<MenuPosition> builder() {
         return new PositionBuilder();
     }
@@ -28,6 +40,8 @@ public class MenuPosition implements Position {
     public final static class PositionBuilder implements Position.Builder<MenuPosition> {
         private double price;
         private String name;
+        private Category category;
+        private String description;
 
         @Override
         public Builder<? extends Position> price(double price) {
@@ -42,8 +56,20 @@ public class MenuPosition implements Position {
         }
 
         @Override
+        public Builder<? extends Position> category(Category category) {
+            this.category = category;
+            return this;
+        }
+
+        @Override
+        public Builder<? extends Position> description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        @Override
         public MenuPosition create() {
-            return new MenuPosition(price, name);
+            return new MenuPosition(price, name, category, description);
         }
     }
 }
