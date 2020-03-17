@@ -1,9 +1,12 @@
 package com.immmus.infrastructure.api.repository;
 
 import com.immmus.infrastructure.api.domain.Position;
+import lombok.NonNull;
 import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Entity
 @ToString
@@ -13,18 +16,23 @@ public class MenuPosition extends AbstractBaseEntity implements Position {
     @Enumerated(EnumType.STRING)
     private Category category;
     private String description;
+    private String composition;
+    transient private String[] ingredients;
 
     protected MenuPosition() { }
 
     private MenuPosition(final double price,
                          final String name,
                          final Category category,
-                         final String description) {
+                         final String description,
+                         final String[] ingredientsComposition) {
 
         this.price = price;
         this.name = name;
         this.category = category;
         this.description = description;
+        this.ingredients = ingredientsComposition;
+        this.composition = Position.toStringComposition(ingredientsComposition);
     }
 
     @Override
@@ -57,6 +65,11 @@ public class MenuPosition extends AbstractBaseEntity implements Position {
         return this.description;
     }
 
+    @Override
+    public String[] ingredients() {
+        return ingredients;
+    }
+
     public static Position.Builder<MenuPosition> builder() {
         return new PositionBuilder();
     }
@@ -66,6 +79,7 @@ public class MenuPosition extends AbstractBaseEntity implements Position {
         private String name;
         private Category category;
         private String description;
+        private String[] ingredients;
 
         @Override
         public Builder<? extends Position> price(double price) {
@@ -92,8 +106,14 @@ public class MenuPosition extends AbstractBaseEntity implements Position {
         }
 
         @Override
+        public Builder<? extends Position> composition(@NonNull String... ingredients) {
+            this.ingredients = ingredients;
+            return this;
+        }
+
+        @Override
         public MenuPosition create() {
-            return new MenuPosition(price, name, category, description);
+            return new MenuPosition(price, name, category, description, ingredients);
         }
     }
 }

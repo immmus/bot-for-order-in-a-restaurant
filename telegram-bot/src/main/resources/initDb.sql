@@ -10,6 +10,7 @@ CREATE TABLE menu_position
     name        TEXT    NOT NULL,
     price       NUMERIC NOT NULL,
     category    TEXT    NOT NULL,
+    composition TEXT,
     description TEXT    NOT NULL
 );
 

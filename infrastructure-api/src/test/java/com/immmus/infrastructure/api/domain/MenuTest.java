@@ -12,7 +12,7 @@ public class MenuTest {
     @Test
     public void viewPositionsByCategory() {
         final Menu<Position> menu = BaseTestData.menu();
-        final List<Position> barPositions = menu.viewPositionsByCategory(Position.Category.BAR);
+        final List<Position> barPositions = menu.viewPositions(Position.Category.BAR);
 
         assertThat(barPositions).isEqualTo(List.of(BaseTestData.VINE_POSITION));
     }
