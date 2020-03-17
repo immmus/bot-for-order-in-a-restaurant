@@ -2,7 +2,7 @@ package com.immmus.infrastructure.api;
 
 import com.immmus.infrastructure.api.domain.Menu;
 import com.immmus.infrastructure.api.domain.MenuForTest;
-import com.immmus.infrastructure.api.domain.MenuPosition;
+import com.immmus.infrastructure.api.repository.MenuPosition;
 import com.immmus.infrastructure.api.domain.Position;
 
 import java.util.List;

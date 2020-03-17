@@ -1,7 +1,7 @@
 package com.immmus.ordering;
 
-import com.immmus.infrastructure.api.repository.AggregateEvent;
+import com.immmus.infrastructure.api.domain.Event;
 
-public interface OnlineOrderEvent extends AggregateEvent {
+public interface OnlineOrderEvent extends Event {
 
 }

@@ -1,22 +1,13 @@
-package com.immmus.infrastructure.api.domain;
+package com.immmus.infrastructure.api.repository;
 
+import com.immmus.infrastructure.api.domain.Position;
 import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @ToString
-public class MenuPosition implements Position {
-    public static final int START_SEQ = 100000;
-
-    @Id
-    @SequenceGenerator(name = "menu_positions_seq", sequenceName = "menu_positions_seq", allocationSize = 1, initialValue = START_SEQ)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "menu_positions_seq")
-
-//  See https://hibernate.atlassian.net/browse/HHH-3718 and https://hibernate.atlassian.net/browse/HHH-12034
-//  Proxy initialization when accessing its identifier managed now by JPA_PROXY_COMPLIANCE setting
-    private Integer id;
-
+public class MenuPosition extends AbstractBaseEntity implements Position {
     private double price;
     private String name;
     @Enumerated(EnumType.STRING)
@@ -37,12 +28,12 @@ public class MenuPosition implements Position {
     }
 
     @Override
-    public Integer getId() {
+    public Long getId() {
         return this.id;
     }
 
     @Override
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

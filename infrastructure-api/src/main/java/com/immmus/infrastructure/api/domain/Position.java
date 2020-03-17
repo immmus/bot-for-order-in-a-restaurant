@@ -1,6 +1,5 @@
 package com.immmus.infrastructure.api.domain;
 
-import com.immmus.infrastructure.api.repository.HasId;
 import lombok.NonNull;
 
 public interface Position extends HasId {

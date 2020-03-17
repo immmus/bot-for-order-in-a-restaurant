@@ -1,3 +1,5 @@
 package com.immmus.infrastructure.api.repository;
 
-public interface RepositoryAddEvent extends AggregateEvent { }
+import com.immmus.infrastructure.api.domain.Event;
+
+public interface RepositoryAddEvent extends Event { }
