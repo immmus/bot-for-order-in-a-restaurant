@@ -7,6 +7,11 @@ import lombok.ToString;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 @ToString
@@ -17,21 +22,23 @@ public class MenuPosition extends AbstractBaseEntity implements Position {
     private Category category;
     private String description;
     private String composition;
-    transient private String[] ingredients;
+    @Transient
+    private List<String> ingredients;
 
-    protected MenuPosition() { }
+    protected MenuPosition() {
+    }
 
     private MenuPosition(final double price,
                          final String name,
                          final Category category,
                          final String description,
-                         final String[] ingredientsComposition) {
+                         final String... ingredientsComposition) {
 
         this.price = price;
         this.name = name;
         this.category = category;
         this.description = description;
-        this.ingredients = ingredientsComposition;
+        this.ingredients = Optional.ofNullable(ingredientsComposition).map(Arrays::asList).orElse(new ArrayList<>());
         this.composition = Position.toStringComposition(ingredientsComposition);
     }
 
@@ -66,8 +73,16 @@ public class MenuPosition extends AbstractBaseEntity implements Position {
     }
 
     @Override
-    public String[] ingredients() {
-        return ingredients;
+    public List<String> ingredients() {
+        if (ingredients == null) {
+            return new ArrayList<>();
+        } else if (ingredients.isEmpty()) {
+            if (composition == null || composition.isBlank()) {
+                return ingredients;
+            } else {
+                return Arrays.asList(composition.split(COMPOSITION_DELIMITER));
+            }
+        } else return ingredients;
     }
 
     public static Position.Builder<MenuPosition> builder() {
