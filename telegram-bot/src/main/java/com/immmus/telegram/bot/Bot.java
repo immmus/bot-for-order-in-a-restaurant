@@ -21,6 +21,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.telegram.abilitybots.api.objects.Flag.CALLBACK_QUERY;
@@ -50,8 +51,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Position.Builder<MenuPosition> POSITION_BUILDER = MenuPosition.builder();
-        final Position soup = POSITION_BUILDER
+        final Position soup = MenuPosition.builder()
                 .name("Борщ")
                 .price(21.50)
                 .composition("картофель", "свекла", "говядина", "сметана")
@@ -59,7 +59,7 @@ public class Bot extends TelegramLongPollingBot {
                 .description("Good soup")
                 .create();
 
-        final Position meat = POSITION_BUILDER
+        final Position meat = MenuPosition.builder()
                 .name("Стейк на гриле")
                 .price(150)
                 .composition("мраморная говядина", "специи", "помидорки черри")
@@ -67,7 +67,7 @@ public class Bot extends TelegramLongPollingBot {
                 .description("Сочная мраморная говядина, приготовленная на гриле с максимально ароматными специями и помидорками черри!")
                 .create();
 
-        final Position vine = POSITION_BUILDER
+        final Position vine = MenuPosition.builder()
                 .name("Вино")
                 .price(250)
                 .category(Position.Category.BAR)
@@ -100,10 +100,8 @@ public class Bot extends TelegramLongPollingBot {
             }
         } else if (CALLBACK_QUERY.test(update)) {
             String callData = update.getCallbackQuery().getData();
-            Arrays.stream(Position.Category.values())
-                    .filter(category -> callData.equals(category.name()))
-                    .findFirst()
-                    .map(context::positionsToString)
+            final Position.Category category = Position.Category.valueOf(callData);
+            Optional.ofNullable(context.positionsToString(category))
                     .ifPresentOrElse(
                             text -> {
                                 SendMessage sendMessage = new SendMessage();
