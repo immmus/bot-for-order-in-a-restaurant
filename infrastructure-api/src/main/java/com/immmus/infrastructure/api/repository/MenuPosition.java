@@ -1,13 +1,9 @@
 package com.immmus.infrastructure.api.repository;
 
 import com.immmus.infrastructure.api.domain.Position;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +11,8 @@ import java.util.Optional;
 
 @Entity
 @ToString
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MenuPosition extends AbstractBaseEntity implements Position {
     private double price;
     private String name;
@@ -24,9 +22,6 @@ public class MenuPosition extends AbstractBaseEntity implements Position {
     private String composition;
     @Transient
     private List<String> ingredients;
-
-    protected MenuPosition() {
-    }
 
     private MenuPosition(final double price,
                          final String name,

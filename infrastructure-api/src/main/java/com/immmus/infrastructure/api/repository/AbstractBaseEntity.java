@@ -3,6 +3,7 @@ package com.immmus.infrastructure.api.repository;
 import com.immmus.infrastructure.api.domain.HasId;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @MappedSuperclass
 public abstract class AbstractBaseEntity implements HasId {
@@ -26,5 +27,18 @@ public abstract class AbstractBaseEntity implements HasId {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractBaseEntity that = (AbstractBaseEntity) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
