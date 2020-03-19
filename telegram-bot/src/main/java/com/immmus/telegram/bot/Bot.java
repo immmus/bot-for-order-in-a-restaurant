@@ -5,35 +5,29 @@ import com.immmus.infrastructure.api.domain.Position;
 import com.immmus.infrastructure.api.repository.MenuPosition;
 import com.immmus.infrastructure.api.service.ChatContext;
 import com.immmus.telegram.bot.dto.TMenu;
+import com.immmus.telegram.bot.factories.KeyboardFactory;
 import com.immmus.telegram.bot.repository.MenuPositionRepository;
+import com.immmus.telegram.bot.service.Sender;
 import com.immmus.telegram.bot.service.TChatContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.abilitybots.api.sender.DefaultSender;
 import org.telegram.abilitybots.api.sender.MessageSender;
-import org.telegram.abilitybots.api.sender.SilentSender;
 import org.telegram.abilitybots.api.util.AbilityUtils;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.telegram.abilitybots.api.objects.Flag.CALLBACK_QUERY;
 
 public class Bot extends TelegramLongPollingBot {
-    @Autowired
-    private MenuPositionRepository repo;
-
     private String name;
     private String token;
-    protected MessageSender sender;
-    protected SilentSender silent;
+    protected MessageSender messageSender;
+    protected Sender sender;
 
     public Bot(String name, String token) {
         super();
@@ -45,8 +39,8 @@ public class Bot extends TelegramLongPollingBot {
         super(options);
         this.name = name;
         this.token = token;
-        this.sender = new DefaultSender(this);
-        this.silent = new SilentSender(sender);
+        this.messageSender = new DefaultSender(this);
+        this.sender = new Sender(messageSender);
     }
 
     @Override
@@ -81,37 +75,20 @@ public class Bot extends TelegramLongPollingBot {
             if (update.getMessage().getText().equals("/start")) {
                 SendMessage message = new SendMessage();
 
-                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                List<List<InlineKeyboardButton>> rowsInline = List.of(
-                        Arrays.stream(Position.Category.values())
-                                .map(category -> new InlineKeyboardButton()
-                                        .setText(category.name())
-                                        .setCallbackData(category.name()))
-                                .collect(Collectors.toList())
-                );
-                markupInline.setKeyboard(rowsInline);
-
                 message.enableHtml(true);
                 message.setChatId(chatId);
                 message.setText("<i><b>Выберете катеригори меню.</b></i>");
-                message.setReplyMarkup(markupInline);
+                message.setReplyMarkup(KeyboardFactory.positionCategoryButtons());
 
-                silent.execute(message);
+                sender.execute(message);
             }
         } else if (CALLBACK_QUERY.test(update)) {
             String callData = update.getCallbackQuery().getData();
             final Position.Category category = Position.Category.valueOf(callData);
             Optional.ofNullable(context.positionsToString(category))
                     .ifPresentOrElse(
-                            text -> {
-                                SendMessage sendMessage = new SendMessage();
-                                sendMessage.setChatId(chatId);
-                                sendMessage.enableHtml(true);
-                                sendMessage.setText(text);
-                                silent.execute(sendMessage);
-                            },
-                            () -> silent.send("К сожаление позиции данной категории отсутствуют.", chatId)
-                    );
+                            text -> sender.sendMd(text, chatId),
+                            () -> sender.send("К сожаление позиции данной категории отсутствуют.", chatId));
         }
     }
 

@@ -50,7 +50,7 @@ public class TChatContext implements ChatContext {
     }
 
     final Function<Position, String> defaultFormat() {
-        final var nameAndPrice = new MessageFormat("<i>{0}</i> - цена {1}");
+        final var nameAndPrice = new MessageFormat("<i><b>{0}</b></i> - цена {1}");
         final var composition = new MessageFormat("\n<u>Состав</u>: {0}");
         final var description = new MessageFormat("\n<u>Описание</u>: {0}");
 
