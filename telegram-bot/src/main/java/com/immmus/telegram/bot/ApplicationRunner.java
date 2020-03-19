@@ -1,6 +1,7 @@
 package com.immmus.telegram.bot;
 
 import com.immmus.telegram.bot.Config.BotConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.telegram.telegrambots.ApiContextInitializer;
 
+@Slf4j
 @SpringBootApplication
 @EntityScan(basePackages = "com.immmus.infrastructure.api")
 public class ApplicationRunner implements CommandLineRunner {
@@ -26,6 +28,6 @@ public class ApplicationRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        System.out.println(bot.getBotUsername() + " running.");
+        log.info("{}  running.", bot.getBotUsername());
     }
 }
