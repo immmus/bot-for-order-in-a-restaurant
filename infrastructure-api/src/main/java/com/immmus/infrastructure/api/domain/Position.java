@@ -2,7 +2,7 @@ package com.immmus.infrastructure.api.domain;
 
 import lombok.NonNull;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.StringJoiner;
 
 public interface Position extends HasId {
@@ -16,10 +16,14 @@ public interface Position extends HasId {
 
     String description();
 
-    List<String> ingredients();
+    Collection<String> ingredients();
 
     default String toStringComposition() {
-        return toStringComposition(ingredients().toArray(String[]::new));
+        return toStringComposition(ingredients());
+    }
+
+    static String toStringComposition(Collection<String> ingredients) {
+        return toStringComposition(ingredients.toArray(String[]::new));
     }
 
     static String toStringComposition(String... ingredients) {
