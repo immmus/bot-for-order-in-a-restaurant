@@ -28,6 +28,6 @@ public class ApplicationRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("{}  running.", bot.getBotUsername());
+        log.info("{} is running.", bot.getBotUsername());
     }
 }
