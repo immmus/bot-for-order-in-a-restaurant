@@ -1,50 +1,39 @@
 package com.immmus.infrastructure.api.repository;
 
 import com.immmus.infrastructure.api.domain.Position;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@Entity
 @ToString
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MenuPosition extends AbstractBaseEntity implements Position {
     private double price;
     private String name;
-    @Enumerated(EnumType.STRING)
     private Category category;
     private String description;
     private String composition;
-    @Transient
     private List<String> ingredients;
 
-    private MenuPosition(final double price,
+    private MenuPosition(final Integer id,
+                         final double price,
                          final String name,
                          final Category category,
                          final String description,
                          final String... ingredientsComposition) {
 
+        super(id);
         this.price = price;
         this.name = name;
         this.category = category;
         this.description = description;
         this.ingredients = Optional.ofNullable(ingredientsComposition).map(Arrays::asList).orElse(new ArrayList<>());
         this.composition = Position.toStringComposition(ingredientsComposition);
-    }
-
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Override
@@ -123,7 +112,7 @@ public class MenuPosition extends AbstractBaseEntity implements Position {
 
         @Override
         public MenuPosition create() {
-            return new MenuPosition(price, name, category, description, ingredients);
+            return new MenuPosition(null, price, name, category, description, ingredients);
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.immmus.telegram.bot.repository;
 
-import com.immmus.infrastructure.api.repository.MenuPosition;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.immmus.infrastructure.api.domain.Menu;
+import com.immmus.infrastructure.api.domain.Position;
 
-@Repository
-public interface MenuPositionRepository extends JpaRepository<MenuPosition, Long> { }
+public interface MenuPositionRepository {
+    Menu<Position> getMenu();
+}

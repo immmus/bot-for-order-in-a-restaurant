@@ -1,11 +1,10 @@
 package com.immmus.telegram.bot;
 
-import com.immmus.infrastructure.api.domain.Menu;
 import com.immmus.infrastructure.api.domain.Position;
-import com.immmus.infrastructure.api.repository.MenuPosition;
 import com.immmus.infrastructure.api.service.ChatContext;
-import com.immmus.telegram.bot.dto.TMenu;
 import com.immmus.telegram.bot.factories.KeyboardFactory;
+import com.immmus.telegram.bot.factories.KeyboardFactory.ButtonActions;
+import com.immmus.telegram.bot.repository.MenuPositionRepository;
 import com.immmus.telegram.bot.service.TChatContext;
 import org.telegram.abilitybots.api.sender.DefaultSender;
 import org.telegram.abilitybots.api.sender.MessageSender;
@@ -19,61 +18,31 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Optional;
 
 import static com.immmus.telegram.bot.factories.KeyboardFactory.closeButton;
 import static com.immmus.telegram.bot.factories.KeyboardFactory.inlineOf;
-import com.immmus.telegram.bot.factories.KeyboardFactory.ButtonActions;
 import static org.telegram.abilitybots.api.objects.Flag.CALLBACK_QUERY;
 
 public class Bot extends TelegramLongPollingBot {
     private String name;
     private String token;
+    protected MenuPositionRepository repository;
     protected MessageSender messageSender;
     protected SilentSender sender;
 
-    public Bot(String name, String token) {
-        super();
-        this.name = name;
-        this.token = token;
-    }
-
-    public Bot(DefaultBotOptions options, String name, String token) {
+    public Bot(DefaultBotOptions options, MenuPositionRepository repository, String name, String token) {
         super(options);
         this.name = name;
         this.token = token;
         this.messageSender = new DefaultSender(this);
         this.sender = new SilentSender(messageSender);
+        this.repository = repository;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        final Position soup = MenuPosition.builder()
-                .name("Борщ")
-                .price(21.50)
-                .composition("картофель", "свекла", "говядина", "сметана")
-                .category(Position.Category.FOOD)
-                .description("Good soup")
-                .create();
-
-        final Position meat = MenuPosition.builder()
-                .name("Стейк на гриле")
-                .price(150)
-                .composition("мраморная говядина", "специи", "помидорки черри")
-                .category(Position.Category.FOOD)
-                .description("Сочная мраморная говядина, приготовленная на гриле с максимально ароматными специями и помидорками черри!")
-                .create();
-
-        final Position vine = MenuPosition.builder()
-                .name("Вино")
-                .price(250)
-                .category(Position.Category.BAR)
-                .description("Good Vine")
-                .create();
-
-        Menu<Position> positionMenu = new TMenu(List.of(soup, meat, vine));
-        final TChatContext context = ChatContext.createContext(positionMenu, TChatContext.class);
+        //TODO реализовать кэшируемость меню
         final Long chatId = AbilityUtils.getChatId(update);
         if (update.hasMessage()) {
             if (update.getMessage().getText().equals("/start")) {
@@ -90,6 +59,7 @@ public class Bot extends TelegramLongPollingBot {
                 message.setMessageId(messageId);
                 sender.execute(message);
             } else {
+                final TChatContext context = ChatContext.createContext(repository.getMenu(), TChatContext.class);
                 final Position.Category category = Position.Category.valueOf(callData);
                 Optional.ofNullable(context.positionsToString(category))
                         .ifPresentOrElse(

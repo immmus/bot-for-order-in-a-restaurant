@@ -1,8 +1,10 @@
 package com.immmus.telegram.bot.Config;
 
 import com.immmus.telegram.bot.Bot;
+import com.immmus.telegram.bot.repository.MenuPositionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +28,12 @@ import static org.telegram.telegrambots.bots.DefaultBotOptions.ProxyType;
 public class BotConfig {
     private static final String defaultProxyType = ProxyType.SOCKS5.name();
     private static final Logger log = LoggerFactory.getLogger(BotConfig.class);
+    private final MenuPositionRepository repository;
+
+    @Autowired
+    public BotConfig (MenuPositionRepository repository) {
+        this.repository = repository;
+    }
 
     public static class Type {
         public final static String FREE_PROXY_BOT = "BotWithFreeProxy";
@@ -58,7 +66,7 @@ public class BotConfig {
             }
         });
 
-        final Bot privateProxyBot = new Bot(getDefaultOpt(), botName, botToken);
+        final Bot privateProxyBot = new Bot(getDefaultOpt(), this.repository, botName, botToken);
         registerBot(privateProxyBot);
 
         return privateProxyBot;
@@ -67,7 +75,7 @@ public class BotConfig {
     @Lazy
     @Bean(name = Type.FREE_PROXY_BOT)
     public Bot freeProxyBot() {
-        final Bot freeProxyBot = new Bot(getDefaultOpt(), botName, botToken);
+        final Bot freeProxyBot = new Bot(getDefaultOpt(), this.repository, botName, botToken);
         registerBot(freeProxyBot);
 
         return freeProxyBot;
@@ -76,7 +84,7 @@ public class BotConfig {
     @Lazy
     @Bean(name = Type.DEFAULT_BOT)
     public Bot defaultBot() {
-        final Bot defaultBot = new Bot(botName, botName);
+        final Bot defaultBot = new Bot(ApiContext.getInstance(DefaultBotOptions.class), this.repository, botName, botName);
         registerBot(defaultBot);
         return defaultBot;
     }
