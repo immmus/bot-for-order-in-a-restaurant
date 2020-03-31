@@ -38,6 +38,7 @@ public class MenuService implements MenuPositionRepository {
 
     @Override
     public Menu<Position> getMenu() {
+        //TODO переписать с использование join query
         List<Position> allPosition = getAllPosition();
         var currentMenPositionIds = new HashSet<>(jdbcTemplate.queryForList("SELECT * FROM MENU", Integer.TYPE));
         return new TMenu(allPosition.stream()
