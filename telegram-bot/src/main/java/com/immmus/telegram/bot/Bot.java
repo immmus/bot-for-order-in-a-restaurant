@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import static com.immmus.telegram.bot.factories.KeyboardFactory.closeButton;
 import static com.immmus.telegram.bot.factories.KeyboardFactory.inlineOf;
+import com.immmus.telegram.bot.factories.KeyboardFactory.ButtonActions;
 import static org.telegram.abilitybots.api.objects.Flag.CALLBACK_QUERY;
 
 public class Bot extends TelegramLongPollingBot {
@@ -82,13 +83,13 @@ public class Bot extends TelegramLongPollingBot {
             }
         } else if (CALLBACK_QUERY.test(update)) {
             String callData = update.getCallbackQuery().getData();
-            if (callData.equalsIgnoreCase("CLOSE_BUTTON")) {
+            if (callData.equalsIgnoreCase(ButtonActions.CLOSE.callbackData)) {
                 Integer messageId = update.getCallbackQuery().getMessage().getMessageId();
-                DeleteMessage message =  new DeleteMessage();
+                DeleteMessage message = new DeleteMessage();
                 message.setChatId(chatId);
                 message.setMessageId(messageId);
                 sender.execute(message);
-            }else {
+            } else {
                 final Position.Category category = Position.Category.valueOf(callData);
                 Optional.ofNullable(context.positionsToString(category))
                         .ifPresentOrElse(
@@ -101,7 +102,8 @@ public class Bot extends TelegramLongPollingBot {
     void send(String text, Long chatId) {
         send(text, chatId, null);
     }
-    void send(String text, Long chatId, @Nullable ReplyKeyboard keyboard){
+
+    void send(String text, Long chatId, @Nullable ReplyKeyboard keyboard) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(text);

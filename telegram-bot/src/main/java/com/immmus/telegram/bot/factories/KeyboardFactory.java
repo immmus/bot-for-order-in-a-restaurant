@@ -9,13 +9,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.immmus.telegram.bot.factories.KeyboardFactory.ButtonActions.CLOSE;
+
 public class KeyboardFactory {
-    enum ButtonActions { CLOSE }
+   public enum ButtonActions {
+        CLOSE("CLOSE", "CLOSE_BUTTON");
+
+        public final String callbackData;
+        public final String name;
+
+        ButtonActions(String name, String callbackData) {
+            this.name = name;
+            this.callbackData = callbackData;
+        }
+    }
+
     public static List<InlineKeyboardButton> closeButton(){
-        String name = ButtonActions.CLOSE.name();
         return List.of(new InlineKeyboardButton()
-                .setText(name)
-                .setCallbackData(name + "_BUTTON")
+                .setText(CLOSE.name)
+                .setCallbackData(CLOSE.callbackData)
         );
     }
 
