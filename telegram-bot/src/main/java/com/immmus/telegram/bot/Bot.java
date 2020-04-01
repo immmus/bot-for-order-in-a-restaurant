@@ -61,7 +61,7 @@ public class Bot extends TelegramLongPollingBot {
             } else {
                 final TChatContext context = ChatContext.createContext(repository.getMenu(), TChatContext.class);
                 final Position.Category category = Position.Category.valueOf(callData);
-                Optional.ofNullable(context.positionsToString(category))
+                Optional.ofNullable(context.positionsToString(category, context.defaultFormat(ChatContext.Language.RUSSIAN)))
                         .ifPresentOrElse(
                                 text -> send(text, chatId, inlineOf(closeButton())),
                                 () -> send("К сожаление позиции данной категории отсутствуют.", chatId, inlineOf(closeButton())));

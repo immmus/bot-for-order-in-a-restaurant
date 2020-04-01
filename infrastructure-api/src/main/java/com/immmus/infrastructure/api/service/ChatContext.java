@@ -29,17 +29,6 @@ public interface ChatContext {
 
     Menu<Position> getMenu();
 
-    enum Language {
-        RUSSIAN("rus"),
-        ENGLISH("eng");
-
-        /** ISO 639-2 */
-        public String code;
-        Language(String code) {
-            this.code = code;
-        }
-    }
-
     default String positionsToString() {
         return positionsToString(getMenu().viewPositions(), defaultFormat());
     }
@@ -74,5 +63,16 @@ public interface ChatContext {
                         getLocalizedMessage("message.composition." + language.code, pos.toStringComposition()) +
                         System.lineSeparator() +
                         getLocalizedMessage("message.description." + language.code, pos.description());
+    }
+
+    enum Language {
+        RUSSIAN("rus"),
+        ENGLISH("eng");
+
+        /** ISO 639-2 */
+        public String code;
+        Language(String code) {
+            this.code = code;
+        }
     }
 }
