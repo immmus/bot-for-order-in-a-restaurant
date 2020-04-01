@@ -16,6 +16,11 @@ public class ChatContextForTest implements ChatContext {
         this.currentMenuPositions = Collections.unmodifiableList(positions);
     }
 
+    @Override
+    public Menu<Position> getMenu() {
+        return this::getCurrentMenuPositions;
+    }
+
     public List<Position> getCurrentMenuPositions() {
         return currentMenuPositions;
     }
