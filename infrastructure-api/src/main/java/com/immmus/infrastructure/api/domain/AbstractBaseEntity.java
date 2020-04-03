@@ -1,6 +1,4 @@
-package com.immmus.infrastructure.api.repository;
-
-import com.immmus.infrastructure.api.domain.HasId;
+package com.immmus.infrastructure.api.domain;
 
 import java.util.Objects;
 

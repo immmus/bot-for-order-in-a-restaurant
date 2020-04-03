@@ -1,11 +1,12 @@
 package com.immmus.telegram.bot;
 
 import com.immmus.infrastructure.api.domain.Position;
-import com.immmus.infrastructure.api.service.ChatContext;
+import com.immmus.infrastructure.api.domain.menu.MenuContext;
+import com.immmus.infrastructure.api.service.ContextService;
+import com.immmus.infrastructure.api.service.MenuContextService;
 import com.immmus.telegram.bot.factories.KeyboardFactory;
 import com.immmus.telegram.bot.factories.KeyboardFactory.ButtonActions;
 import com.immmus.telegram.bot.repository.MenuPositionRepository;
-import com.immmus.telegram.bot.service.TChatContext;
 import org.telegram.abilitybots.api.sender.DefaultSender;
 import org.telegram.abilitybots.api.sender.MessageSender;
 import org.telegram.abilitybots.api.sender.SilentSender;
@@ -27,6 +28,8 @@ import static org.telegram.abilitybots.api.objects.Flag.CALLBACK_QUERY;
 public class Bot extends TelegramLongPollingBot {
     private String name;
     private String token;
+    private MenuContextService contextService;
+
     protected MenuPositionRepository repository;
     protected MessageSender messageSender;
     protected SilentSender sender;
@@ -38,6 +41,10 @@ public class Bot extends TelegramLongPollingBot {
         this.messageSender = new DefaultSender(this);
         this.sender = new SilentSender(messageSender);
         this.repository = repository;
+        this.contextService = ContextService.create(
+                new MenuContext(repository.getMenu()),
+                MenuContextService.class
+        );
     }
 
     @Override
@@ -59,9 +66,9 @@ public class Bot extends TelegramLongPollingBot {
                 message.setMessageId(messageId);
                 sender.execute(message);
             } else {
-                final TChatContext context = ChatContext.createContext(repository.getMenu(), TChatContext.class);
                 final Position.Category category = Position.Category.valueOf(callData);
-                Optional.ofNullable(context.positionsToString(category, context.defaultFormat(ChatContext.Language.RUSSIAN)))
+                var format = contextService.defaultFormat(MenuContextService.Language.RUSSIAN);
+                Optional.ofNullable(contextService.positionsToString(category, format))
                         .ifPresentOrElse(
                                 text -> send(text, chatId, inlineOf(closeButton())),
                                 () -> send("К сожаление позиции данной категории отсутствуют.", chatId, inlineOf(closeButton())));

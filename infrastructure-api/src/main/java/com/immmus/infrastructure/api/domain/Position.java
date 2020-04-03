@@ -41,7 +41,7 @@ public interface Position extends HasId {
     interface Builder<P extends Position> {
         Builder<? extends Position> price(double price);
         Builder<? extends Position> name(@NonNull String name);
-        Builder<? extends Position> category(@NonNull Category name);
+        Builder<? extends Position> category(@NonNull Category category);
         Builder<? extends Position> description(@NonNull String description);
         Builder<? extends Position> composition(@NonNull String... ingredients);
         P create();

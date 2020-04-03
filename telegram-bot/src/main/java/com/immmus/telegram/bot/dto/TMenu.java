@@ -1,6 +1,6 @@
 package com.immmus.telegram.bot.dto;
 
-import com.immmus.infrastructure.api.domain.Menu;
+import com.immmus.infrastructure.api.domain.menu.Menu;
 import com.immmus.infrastructure.api.domain.Position;
 
 import java.util.Collections;

@@ -1,4 +1,6 @@
-package com.immmus.infrastructure.api.domain;
+package com.immmus.infrastructure.api.domain.menu;
+
+import com.immmus.infrastructure.api.domain.Position;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,9 +9,8 @@ public interface Menu<P extends Position> {
 
     /**
      * @return list with all menu positions
-     **/
+     */
     List<P> viewPositions();
-
 
     /**
      * Return all positions by category {@link Position.Category}

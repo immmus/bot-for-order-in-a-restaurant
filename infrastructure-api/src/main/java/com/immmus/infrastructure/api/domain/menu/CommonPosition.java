@@ -1,5 +1,6 @@
-package com.immmus.infrastructure.api.repository;
+package com.immmus.infrastructure.api.domain.menu;
 
+import com.immmus.infrastructure.api.domain.AbstractBaseEntity;
 import com.immmus.infrastructure.api.domain.Position;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -12,26 +13,29 @@ import java.util.Optional;
 
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public class MenuPosition extends AbstractBaseEntity implements Position {
+public class CommonPosition extends AbstractBaseEntity implements Position {
     private double price;
     private String name;
     private Category category;
     private String description;
     private String composition;
+    private boolean isActive;
     private List<String> ingredients;
 
-    private MenuPosition(final Integer id,
-                         final double price,
-                         final String name,
-                         final Category category,
-                         final String description,
-                         final String... ingredientsComposition) {
+    private CommonPosition(final Integer id,
+                           final double price,
+                           final String name,
+                           final Category category,
+                           final String description,
+                           final boolean isActive,
+                           final String... ingredientsComposition) {
 
         super(id);
         this.price = price;
         this.name = name;
         this.category = category;
         this.description = description;
+        this.isActive = isActive;
         this.ingredients = Optional.ofNullable(ingredientsComposition).map(Arrays::asList).orElse(new ArrayList<>());
         this.composition = Position.toStringComposition(ingredientsComposition);
     }
@@ -69,50 +73,69 @@ public class MenuPosition extends AbstractBaseEntity implements Position {
         } else return ingredients;
     }
 
-    public static Position.Builder<MenuPosition> builder() {
-        return new PositionBuilder();
+    public boolean isActive() {
+        return this.isActive;
     }
 
-    public final static class PositionBuilder implements Position.Builder<MenuPosition> {
+    public void deactivate() {
+        this.isActive = false;
+    }
+
+    public void activate() {
+        this.isActive = true;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public final static class Builder implements Position.Builder<CommonPosition> {
         private double price;
         private String name;
         private Category category;
         private String description;
+        private boolean isActive = true;
         private String[] ingredients;
 
+
         @Override
-        public Builder<? extends Position> price(double price) {
+        public Builder price(double price) {
             this.price = price;
             return this;
         }
 
         @Override
-        public Builder<? extends Position> name(String name) {
+        public Builder name(@NonNull String name) {
             this.name = name;
             return this;
         }
 
         @Override
-        public Builder<? extends Position> category(Category category) {
+        public Builder category(@NonNull Category category) {
             this.category = category;
             return this;
         }
 
         @Override
-        public Builder<? extends Position> description(String description) {
+        public Builder description(@NonNull String description) {
             this.description = description;
             return this;
         }
 
         @Override
-        public Builder<? extends Position> composition(@NonNull String... ingredients) {
+        public Builder composition(@NonNull String... ingredients) {
             this.ingredients = ingredients;
             return this;
         }
 
+        public Builder activate(boolean isActive) {
+            this.isActive = isActive;
+            return this;
+        }
+
         @Override
-        public MenuPosition create() {
-            return new MenuPosition(null, price, name, category, description, ingredients);
+        public CommonPosition create() {
+            return new CommonPosition(null, price, name, category, description, isActive, ingredients);
         }
     }
 }
