@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class MenuService implements MenuPositionRepository {
-
+    //TODO работа с триггерами базы для возможного обновления меню https://evileg.com/ru/post/372/
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<CommonPosition> positionRowMapper =
             (rs, rowNum) -> {

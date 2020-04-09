@@ -50,6 +50,8 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         //TODO реализовать кэшируемость меню
+        //TODO применить паттерны https://howtodoinjava.com/design-patterns/behavioral/chain-of-responsibility-design-pattern/
+        //TODO или https://howtodoinjava.com/design-patterns/behavioral/command-pattern/
         final Long chatId = AbilityUtils.getChatId(update);
         if (update.hasMessage()) {
             if (update.getMessage().getText().equals("/start")) {
@@ -68,6 +70,7 @@ public class Bot extends TelegramLongPollingBot {
             } else {
                 final Position.Category category = Position.Category.valueOf(callData);
                 var format = contextService.defaultFormat(MenuContextService.Language.RUSSIAN);
+                //TODO попробовать переписать подобный функционал на Spring Webflux or P Reactor
                 Optional.ofNullable(contextService.positionsToString(category, format))
                         .ifPresentOrElse(
                                 text -> send(text, chatId, inlineOf(closeButton())),
