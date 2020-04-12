@@ -2,6 +2,9 @@ package com.immmus.telegram.bot.service;
 
 import com.immmus.infrastructure.api.domain.Position;
 import com.immmus.infrastructure.api.domain.menu.CommonPosition;
+import com.immmus.infrastructure.api.domain.menu.MenuContext;
+import com.immmus.infrastructure.api.service.ContextService;
+import com.immmus.infrastructure.api.service.MenuContextService;
 import com.immmus.telegram.bot.repository.MenuPositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,6 +35,11 @@ public class MenuService implements MenuPositionRepository {
     @Autowired
     public MenuService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public MenuContextService getMenuContextService() {
+        final MenuContext menuContext = new MenuContext(getMenu());
+        return ContextService.create(menuContext, MenuContextService.class);
     }
 
     @Override
