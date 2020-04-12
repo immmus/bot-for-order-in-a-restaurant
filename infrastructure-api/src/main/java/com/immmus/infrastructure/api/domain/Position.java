@@ -2,6 +2,7 @@ package com.immmus.infrastructure.api.domain;
 
 import lombok.NonNull;
 
+import java.util.Collection;
 import java.util.StringJoiner;
 
 public interface Position extends HasId {
@@ -15,14 +16,18 @@ public interface Position extends HasId {
 
     String description();
 
-    String[] ingredients();
+    Collection<String> ingredients();
 
     default String toStringComposition() {
         return toStringComposition(ingredients());
     }
 
+    static String toStringComposition(Collection<String> ingredients) {
+        return toStringComposition(ingredients.toArray(String[]::new));
+    }
+
     static String toStringComposition(String... ingredients) {
-        if(ingredients == null || ingredients.length == 0) return "absent";
+        if(ingredients == null || ingredients.length == 0) return null;
 
         StringJoiner j = new StringJoiner(COMPOSITION_DELIMITER);
         for (String ingredient: ingredients) j.add(ingredient);
@@ -36,7 +41,7 @@ public interface Position extends HasId {
     interface Builder<P extends Position> {
         Builder<? extends Position> price(double price);
         Builder<? extends Position> name(@NonNull String name);
-        Builder<? extends Position> category(@NonNull Category name);
+        Builder<? extends Position> category(@NonNull Category category);
         Builder<? extends Position> description(@NonNull String description);
         Builder<? extends Position> composition(@NonNull String... ingredients);
         P create();

@@ -1,24 +1,26 @@
 package com.immmus.infrastructure.api.service;
 
 
-import com.immmus.infrastructure.api.domain.Menu;
-import com.immmus.infrastructure.api.domain.Position;
+import com.immmus.infrastructure.api.domain.Context;
 
 import java.lang.reflect.Constructor;
 
-public interface ChatContext {
+public interface ContextService<Cxt extends Context> {
 
-    static <CS extends ChatContext> CS createContext(final Menu<Position> menu, final Class<CS> classService) {
+    static <CS extends ContextService<Cxt>, Cxt extends Context>
+    CS create(final Cxt context, final Class<CS> classService) {
         try {
             final Constructor<CS> ctor = classService.getDeclaredConstructor();
             ctor.setAccessible(true);
             final CS chatService = ctor.newInstance();
-            chatService.loadState(menu);
+            chatService.loadState(context);
             return chatService;
         } catch (final Exception e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
-    void loadState(Menu<Position> menu);
+    void loadState(Cxt context);
+
+    Cxt getContext();
 }
