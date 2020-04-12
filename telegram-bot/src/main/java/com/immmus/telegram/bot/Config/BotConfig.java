@@ -1,45 +1,33 @@
 package com.immmus.telegram.bot.Config;
 
-import com.immmus.telegram.bot.Bot;
-import com.immmus.telegram.bot.repository.MenuPositionRepository;
+import com.immmus.telegram.bot.LongPollingTelegramBotService;
+import com.immmus.telegram.bot.TelegramBotService;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
-import org.telegram.telegrambots.meta.ApiContext;
+import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.LongPollingBot;
+import org.telegram.telegrambots.meta.generics.WebhookBot;
 
+import javax.annotation.PostConstruct;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
-import java.util.List;
-
-import static org.telegram.telegrambots.bots.DefaultBotOptions.ProxyType;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Configuration
 @PropertySource(value = "classpath:/telegram-bot-config.properties")
 public class BotConfig {
-    private static final String defaultProxyType = ProxyType.SOCKS5.name();
     private static final Logger log = LoggerFactory.getLogger(BotConfig.class);
-    private final MenuPositionRepository repository;
-
-    @Autowired
-    public BotConfig (MenuPositionRepository repository) {
-        this.repository = repository;
-    }
-
-    public static class Type {
-        public final static String FREE_PROXY_BOT = "BotWithFreeProxy";
-        public final static String PRIVATE_PROXY_BOT = "BotWithPrivateProxy";
-        public final static String DEFAULT_BOT = "defaultBot";
-    }
+    private static final Set<Type> types = EnumSet.allOf(BotConfig.Type.class);
 
     @Value("${bot.name}")
     private String botName;
@@ -55,66 +43,81 @@ public class BotConfig {
     private Integer proxyPort;
     @Value("${bot.proxy.type-version}")
     private String proxyType;
+    @Value("${bot.type}")
+    private String stringBotType;
 
-    @Lazy
-    @Bean(name = Type.PRIVATE_PROXY_BOT)
-    public Bot privateProxyBot() {
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password.toCharArray());
-            }
-        });
+    private Type type;
 
-        final Bot privateProxyBot = new Bot(getDefaultOpt(), this.repository, botName, botToken);
-        registerBot(privateProxyBot);
-
-        return privateProxyBot;
+    @PostConstruct
+    public void convertType() {
+        this.type = types.stream()
+                .filter(t -> t.name().equals(stringBotType))
+                .findFirst()
+                .orElseThrow(() -> {
+                    log.error("Unknown or incorrect type bot - '{}'. " +
+                            "Please check or set config 'bot.type'. " +
+                            "One of types {}.", stringBotType, types);
+                    throw new IllegalArgumentException();
+                });
     }
 
     @Lazy
-    @Bean(name = Type.FREE_PROXY_BOT)
-    public Bot freeProxyBot() {
-        final Bot freeProxyBot = new Bot(getDefaultOpt(), this.repository, botName, botToken);
-        registerBot(freeProxyBot);
-
-        return freeProxyBot;
+    @Bean
+    public TelegramBotService telegramBot(TelegramBotBuilder builder) {
+        final var telegramBotService = type.createBot(builder);
+        try {
+            registerBot(telegramBotService.getClient());
+        } catch (TelegramApiRequestException e) {
+            log.error("There was a problem registering the bot. With {}", builder, e);
+            System.exit(1);
+        }
+        return telegramBotService;
     }
 
-    @Lazy
-    @Bean(name = Type.DEFAULT_BOT)
-    public Bot defaultBot() {
-        final Bot defaultBot = new Bot(ApiContext.getInstance(DefaultBotOptions.class), this.repository, botName, botName);
-        registerBot(defaultBot);
-        return defaultBot;
-    }
+    @Bean
+    public TelegramBotBuilder telegramBotBuilder() {
+        var telegramBotBuilder = TelegramBotBuilder.of()
+                .token(botToken)
+                .username(botName);
 
-    DefaultBotOptions getDefaultOpt() {
-        final var defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
-        defaultBotOptions.setProxyHost(proxyHost);
-        defaultBotOptions.setProxyPort(proxyPort);
+        if (Type.DEFAULT_LONG_POLLING_BOT.equals(type)) {
+            return telegramBotBuilder;
+        }
+        var proxySettingsBuilder = ProxySettings.builder()
+                .host(proxyHost)
+                .port(proxyPort)
+                .proxyType(proxyType);
 
-        log.info("Set {} proxy host", proxyHost);
-        log.info("Set {} proxy port", proxyPort);
-
-        if (proxyType.equals(defaultProxyType)) {
-            defaultBotOptions.setProxyType(ProxyType.SOCKS5);
-        } else if (proxyType.equals(ProxyType.SOCKS4.name())) {
-            defaultBotOptions.setProxyType(ProxyType.SOCKS4);
-        } else if (proxyType.equals(ProxyType.HTTP.name())) {
-            defaultBotOptions.setProxyType(ProxyType.HTTP);
+        if (Type.FREE_PROXY_LONG_POLLING_BOT.equals(type)) {
+            return telegramBotBuilder
+                    .withProxy(proxySettingsBuilder.build());
+        } else if (Type.PRIVATE_PROXY_LONG_POLLING_BOT.equals(type)) {
+            proxySettingsBuilder
+                    .username(username)
+                    .password(password);
+            return telegramBotBuilder
+                    .withProxy(proxySettingsBuilder.build());
         } else {
-            log.warn("Set incorrect proxy type - {}.", proxyType);
-            log.warn("Please use one of types - {}", List.of(ProxyType.SOCKS5, ProxyType.SOCKS4, ProxyType.HTTP));
+            log.warn("Failed to determine bot type. Unknown type - {}. Value get DEFAULT.", stringBotType);
+            return telegramBotBuilder;
+        }
+    }
 
-            return ApiContext.getInstance(DefaultBotOptions.class);
+    private void registerBot(DefaultAbsSender bot) throws TelegramApiRequestException {
+        if (bot instanceof LongPollingBot) {
+            registerLongPollingBot((LongPollingBot) bot);
         }
 
-        log.info("Set {} proxy type", proxyType);
-        return defaultBotOptions;
+        if (bot instanceof WebhookBot) {
+            registerWebHookBot((WebhookBot) bot);
+        }
     }
 
-    private void registerBot(LongPollingBot bot) {
+    private void registerWebHookBot(WebhookBot bot) {
+        throw new UnsupportedOperationException();
+    }
+
+    private void registerLongPollingBot(LongPollingBot bot) throws TelegramApiRequestException {
         final String botUsername = bot.getBotUsername();
         final String botToken = bot.getBotToken();
 
@@ -124,14 +127,41 @@ public class BotConfig {
                 && !botToken.equals("unknown")) {
 
             final var api = new TelegramBotsApi();
-            try {
-                api.registerBot(bot);
-            } catch (TelegramApiRequestException e) {
-                log.error("There was a problem registering the bot. {}", e.getMessage());
-                System.exit(1);
-            }
+            api.registerBot(bot);
         } else {
-            log.warn("This bot were'nt registered! Check bot_name and bot_token.");
+            log.error("This bot were'nt registered! Check bot_name and bot_token.");
         }
+    }
+
+    @Getter
+    public enum Type {
+        FREE_PROXY_LONG_POLLING_BOT {
+            @Override
+            TelegramBotService createBot(TelegramBotBuilder builder) {
+                return new LongPollingTelegramBotService(builder);
+            }
+        },
+        PRIVATE_PROXY_LONG_POLLING_BOT {
+            @Override
+            TelegramBotService createBot(TelegramBotBuilder builder) {
+                Authenticator.setDefault(new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(
+                                builder.getProxySettings().getUsername(),
+                                builder.getProxySettings().getPassword().toCharArray());
+                    }
+                });
+                return new LongPollingTelegramBotService(builder);
+            }
+        },
+        DEFAULT_LONG_POLLING_BOT {
+            @Override
+            TelegramBotService createBot(TelegramBotBuilder builder) {
+                return new LongPollingTelegramBotService(builder);
+            }
+        };
+
+        abstract TelegramBotService createBot(TelegramBotBuilder builder);
     }
 }
