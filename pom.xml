@@ -21,6 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <lombok.version>1.18.12</lombok.version>
+        <guava.version>28.2-jre</guava.version>
         <spring.boot.version>2.2.5.RELEASE</spring.boot.version>
         <persistence.api.version>2.2.3</persistence.api.version>
         <postgresql.version>42.2.5</postgresql.version>
@@ -56,6 +57,12 @@
                 <scope>runtime</scope>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>ch.qos.logback</groupId>
