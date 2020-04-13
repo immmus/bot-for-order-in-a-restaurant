@@ -65,7 +65,7 @@ public class BotConfig {
                         throw new IllegalArgumentException();
                     });
         } else {
-            this.type = Type.DEFAULT_WEBHOOK_BOT;
+            this.type = Type.DEFAULT_LONG_POLLING_BOT;
         }
     }
 
