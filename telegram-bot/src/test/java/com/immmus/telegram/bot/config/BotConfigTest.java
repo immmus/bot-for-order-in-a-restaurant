@@ -1,6 +1,6 @@
-package com.immmus.telegram.bot.Config;
+package com.immmus.telegram.bot.config;
 
-import com.immmus.telegram.bot.Config.profiles.Common;
+import com.immmus.telegram.bot.config.profiles.Common;
 import com.immmus.telegram.bot.TelegramBotService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

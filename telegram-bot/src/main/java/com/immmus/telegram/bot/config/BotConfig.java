@@ -1,4 +1,4 @@
-package com.immmus.telegram.bot.Config;
+package com.immmus.telegram.bot.config;
 
 import com.immmus.telegram.bot.LongPollingTelegramBotService;
 import com.immmus.telegram.bot.TelegramBotService;
