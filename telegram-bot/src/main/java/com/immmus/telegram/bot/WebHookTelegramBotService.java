@@ -21,7 +21,7 @@ public class WebHookTelegramBotService extends TelegramBotService {
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException();
+        //nothing
     }
 
     private class TelegramBot extends TelegramWebhookBot {
@@ -38,7 +38,9 @@ public class WebHookTelegramBotService extends TelegramBotService {
 
         @Override
         public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-            return updateProcess(update).orElse(null);
+            BotApiMethod<?> result = updateProcess(update).orElse(null);
+            log.debug("Update: {}. Message: {}. Successfully sent", update, result);
+            return result;
         }
 
         @Override
