@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS MENU;
 DROP TABLE IF EXISTS menu_positions;
 DROP SEQUENCE IF EXISTS menu_positions_seq;
 
