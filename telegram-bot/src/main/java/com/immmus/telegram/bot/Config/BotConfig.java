@@ -29,26 +29,26 @@ public class BotConfig {
     private static final Logger log = LoggerFactory.getLogger(BotConfig.class);
     private static final Set<Type> types = EnumSet.allOf(BotConfig.Type.class);
 
-    @Value("${bot.name}")
+    @Value("${bot.name:unknown}")
     private String botName;
-    @Value("${bot.token}")
+    @Value("${bot.token:unknown}")
     private String botToken;
-    @Value("${bot.proxy.username}")
+    @Value("${bot.proxy.username:unknown}")
     private String username;
-    @Value("${bot.proxy.password}")
+    @Value("${bot.proxy.password:unknown}")
     private String password;
-    @Value("${bot.proxy.host}")
+    @Value("${bot.proxy.host:0.0.0.1}")
     private String proxyHost;
-    @Value("${bot.proxy.port}")
+    @Value("${bot.proxy.port:666}")
     private Integer proxyPort;
-    @Value("${bot.proxy.type-version}")
+    @Value("${bot.proxy.type-version:SOCKS5}")
     private String proxyType;
     @Value("${bot.type:DEFAULT_LONG_POLLING_BOT}")
     private String stringBotType;
-    @Value("${bot.webhook.path}")
+    @Value("${bot.webhook.path:unknown}")
     private String webHookPath;
 
-    @Value("${spring.profiles.active:Unknown}")
+    @Value("${spring.profiles.active:unknown}")
     private String activeProfile;
     private Type type;
 
