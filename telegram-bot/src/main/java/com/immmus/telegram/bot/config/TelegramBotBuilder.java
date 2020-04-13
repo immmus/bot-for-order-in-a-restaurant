@@ -1,4 +1,4 @@
-package com.immmus.telegram.bot.Config;
+package com.immmus.telegram.bot.config;
 
 
 import lombok.Getter;

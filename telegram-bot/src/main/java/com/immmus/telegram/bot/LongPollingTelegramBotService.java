@@ -1,6 +1,6 @@
 package com.immmus.telegram.bot;
 
-import com.immmus.telegram.bot.Config.TelegramBotBuilder;
+import com.immmus.telegram.bot.config.TelegramBotBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
