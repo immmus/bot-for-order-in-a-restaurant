@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.immmus.telegram.bot</groupId>
     <artifactId>telegram-bot</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <telegram.api.version>4.6</telegram.api.version>
@@ -90,6 +91,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.immmus.telegram.bot.ApplicationRunner</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
