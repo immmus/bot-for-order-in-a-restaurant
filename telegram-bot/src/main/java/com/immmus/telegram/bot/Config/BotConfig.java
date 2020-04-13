@@ -93,7 +93,7 @@ public class BotConfig {
 
         if(Type.DEFAULT_WEBHOOK_BOT.equals(type)) {
             return telegramBotBuilder
-                    .webHookPath(webHookPath);
+                    .webHookPath(webHookPath + "/" + botToken);
         }
 
         var proxySettingsBuilder = ProxySettings.builder()
