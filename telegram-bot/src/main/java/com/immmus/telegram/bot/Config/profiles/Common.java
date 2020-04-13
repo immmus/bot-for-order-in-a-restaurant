@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Profile("heroku")
-public @interface Heroku {
-    String profile = "heroku";
+@Profile("default")
+public @interface Common {
+    String profile = "default";
 }

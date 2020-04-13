@@ -1,5 +1,6 @@
 package com.immmus.telegram.bot.Config;
 
+import com.immmus.telegram.bot.Config.profiles.Common;
 import com.immmus.telegram.bot.Config.profiles.Heroku;
 import com.immmus.telegram.bot.LongPollingTelegramBotService;
 import com.immmus.telegram.bot.TelegramBotService;
@@ -8,10 +9,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -31,23 +29,23 @@ public class BotConfig {
     private static final Logger log = LoggerFactory.getLogger(BotConfig.class);
     private static final Set<Type> types = EnumSet.allOf(BotConfig.Type.class);
 
-    @Value("${bot.name:unknown}")
+    @Value("${bot.name}")
     private String botName;
-    @Value("${bot.token:unknown}")
+    @Value("${bot.token}")
     private String botToken;
-    @Value("${bot.proxy.username:unknown}")
+    @Value("${bot.proxy.username}")
     private String username;
-    @Value("${bot.proxy.password:unknown}")
+    @Value("${bot.proxy.password}")
     private String password;
-    @Value("${bot.proxy.host:0.0.0.1}")
+    @Value("${bot.proxy.host}")
     private String proxyHost;
-    @Value("${bot.proxy.port:666}")
+    @Value("${bot.proxy.port}")
     private Integer proxyPort;
-    @Value("${bot.proxy.type-version:SOCKS5}")
+    @Value("${bot.proxy.type-version}")
     private String proxyType;
     @Value("${bot.type:DEFAULT_LONG_POLLING_BOT}")
     private String stringBotType;
-    @Value("${bot.webhook.path:unknown}")
+    @Value("${bot.webhook.path}")
     private String webHookPath;
 
     @Value("${spring.profiles.active:Unknown}")
@@ -56,37 +54,31 @@ public class BotConfig {
 
     @PostConstruct
     public void convertType() {
-        if (!activeProfile.equals(Heroku.profile))
-        this.type = types.stream()
-                .filter(t -> t.name().equals(stringBotType))
-                .findFirst()
-                .orElseThrow(() -> {
-                    log.error("Unknown or incorrect type bot - '{}'. " +
-                            "Please check or set config 'bot.type'. " +
-                            "One of types {}.", stringBotType, types);
-                    throw new IllegalArgumentException();
-                });
-    }
-
-    @Lazy
-    @Bean
-    public TelegramBotService telegramBot(TelegramBotBuilder builder) {
-        final var telegramBotService = type.createBot(builder);
-        try {
-            registerBot(telegramBotService.getClient());
-        } catch (TelegramApiRequestException e) {
-            log.error("There was a problem registering the bot. With {}", builder, e);
-            System.exit(1);
+        if (!activeProfile.equals(Heroku.profile)) {
+            this.type = types.stream()
+                    .filter(t -> t.name().equals(stringBotType))
+                    .findFirst()
+                    .orElseThrow(() -> {
+                        log.error("Unknown or incorrect type bot - '{}'. " +
+                                "Please check or set config 'bot.type'. " +
+                                "One of types {}.", stringBotType, types);
+                        throw new IllegalArgumentException();
+                    });
+        } else {
+            this.type = Type.DEFAULT_WEBHOOK_BOT;
         }
-        return telegramBotService;
     }
 
-    @Lazy
+    @Bean
+    @Common
+    public TelegramBotService telegramBot(TelegramBotBuilder builder) {
+        return createService(builder);
+    }
+
     @Bean
     @Heroku
     public TelegramBotService herokuTelegramBot(TelegramBotBuilder builder) {
-        this.type = Type.DEFAULT_WEBHOOK_BOT;
-        return telegramBot(builder);
+        return createService(builder);
     }
 
     @Bean
@@ -122,6 +114,17 @@ public class BotConfig {
             log.warn("Failed to determine bot type. Unknown type - {}. Value get DEFAULT.", stringBotType);
             return telegramBotBuilder;
         }
+    }
+
+    private TelegramBotService createService(TelegramBotBuilder builder) {
+        final var telegramBotService = type.createBot(builder);
+        try {
+            registerBot(telegramBotService.getClient());
+        } catch (TelegramApiRequestException e) {
+            log.error("There was a problem registering the bot. With {}", builder, e);
+            System.exit(1);
+        }
+        return telegramBotService;
     }
 
     private void registerBot(DefaultAbsSender bot) throws TelegramApiRequestException {

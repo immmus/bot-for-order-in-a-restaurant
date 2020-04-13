@@ -1,10 +1,12 @@
 package com.immmus.telegram.bot.Config;
 
+import com.immmus.telegram.bot.Config.profiles.Common;
 import com.immmus.telegram.bot.TelegramBotService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -14,6 +16,7 @@ import org.telegram.telegrambots.meta.generics.LongPollingBot;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /** Перед запуском теста необходимо задать параметры в test-config.properties **/
+@ActiveProfiles(value = Common.profile)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = BotConfig.class)
 @TestPropertySource(locations = "/test-private-telegram-bot-config.properties")
