@@ -14,6 +14,7 @@ public class TelegramBotBuilder {
     private String token;
     private ProxySettings proxySettings;
     private DefaultBotOptions defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
+    private String webHookPath;
 
     private TelegramBotBuilder() { }
 
@@ -34,6 +35,14 @@ public class TelegramBotBuilder {
      */
     public TelegramBotBuilder token(String token) {
         this.token = token;
+        return this;
+    }
+
+    /**
+     * It is required for only webhook bot.
+     * */
+    public TelegramBotBuilder webHookPath(String webHookPath) {
+        this.webHookPath = webHookPath;
         return this;
     }
 
