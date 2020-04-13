@@ -1,7 +1,5 @@
 package com.immmus.telegram.bot.Config;
 
-import com.immmus.telegram.bot.Config.profiles.Common;
-import com.immmus.telegram.bot.Config.profiles.Heroku;
 import com.immmus.telegram.bot.LongPollingTelegramBotService;
 import com.immmus.telegram.bot.TelegramBotService;
 import com.immmus.telegram.bot.WebHookTelegramBotService;
@@ -9,7 +7,9 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -48,13 +48,10 @@ public class BotConfig {
     @Value("${bot.webhook.path:unknown}")
     private String webHookPath;
 
-    @Value("${spring.profiles.active:unknown}")
-    private String activeProfile;
     private Type type;
 
     @PostConstruct
     public void convertType() {
-        if (!activeProfile.equals(Heroku.profile)) {
             this.type = types.stream()
                     .filter(t -> t.name().equals(stringBotType))
                     .findFirst()
@@ -64,20 +61,10 @@ public class BotConfig {
                                 "One of types {}.", stringBotType, types);
                         throw new IllegalArgumentException();
                     });
-        } else {
-            this.type = Type.DEFAULT_LONG_POLLING_BOT;
-        }
     }
 
     @Bean
-    @Common
     public TelegramBotService telegramBot(TelegramBotBuilder builder) {
-        return createService(builder);
-    }
-
-    @Bean
-    @Heroku
-    public TelegramBotService herokuTelegramBot(TelegramBotBuilder builder) {
         return createService(builder);
     }
 
