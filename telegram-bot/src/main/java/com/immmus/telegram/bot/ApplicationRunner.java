@@ -6,7 +6,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.telegram.telegrambots.ApiContextInitializer;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.bots.DefaultAbsSender;
+import org.telegram.telegrambots.meta.generics.LongPollingBot;
+import org.telegram.telegrambots.meta.generics.WebhookBot;
 
 @Slf4j
 @SpringBootApplication
@@ -25,12 +27,16 @@ public class ApplicationRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        DefaultAbsSender client = bot.getClient();
         String botName = null;
-        try {
-            botName = bot.getClient().getMe().getFirstName();
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+        if (client instanceof LongPollingBot) {
+            botName = ((LongPollingBot) client).getBotUsername();
         }
+
+        if (client instanceof WebhookBot) {
+           botName = ((WebhookBot) client).getBotUsername();
+        }
+
         log.info("{} is running.", botName);
     }
 }
