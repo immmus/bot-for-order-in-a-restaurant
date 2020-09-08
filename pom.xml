@@ -5,23 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.immmus</groupId>
-    <artifactId>bot-for-order-in-a-restaurant</artifactId>
+    <artifactId>research-for-telegram-bots</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
 
     <modules>
-        <module>telegram-bot</module>
-        <module>infrastructure-api</module>
-        <module>ordering</module>
-        <module>cooking</module>
+        <module>standard-telegram-bot</module>
+        <module>bot-sample</module>
     </modules>
 
     <properties>
+        <current.project.version>1.0</current.project.version>
         <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <lombok.version>1.18.12</lombok.version>
-        <guava.version>28.2-jre</guava.version>
         <spring.boot.version>2.2.5.RELEASE</spring.boot.version>
         <persistence.api.version>2.2.3</persistence.api.version>
         <postgresql.version>42.2.5</postgresql.version>
@@ -55,13 +53,6 @@
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
                 <scope>runtime</scope>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
             </dependency>
 
             <dependency>
