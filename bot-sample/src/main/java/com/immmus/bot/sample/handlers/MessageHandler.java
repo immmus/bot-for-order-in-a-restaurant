@@ -17,7 +17,7 @@ public class MessageHandler {
             return Optional.of(new SendMessage()
                     .enableHtml(true)
                     .setChatId(chatId)
-                    .setText("<i><b>Hi! I am Bot.</b></i>")
+                    .setText("<i><b>Hi! I am Bot. My name is immmus</b></i>")
                     .setReplyMarkup(inlineOf(closeButton()))
             );
     }

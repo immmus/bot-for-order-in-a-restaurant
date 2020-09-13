@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Profile("default")
+@Profile("DEFAULT_LONG_POLLING_BOT")
 public @interface Common {
-    String profile = "default";
+    String profile = "DEFAULT_LONG_POLLING_BOT";
 }
