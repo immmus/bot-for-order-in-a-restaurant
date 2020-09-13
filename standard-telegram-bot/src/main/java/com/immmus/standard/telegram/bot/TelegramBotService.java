@@ -15,13 +15,13 @@ import java.util.function.Predicate;
 import static org.telegram.abilitybots.api.objects.Flag.*;
 
 @Slf4j
-public abstract class TelegramBotService implements TelegramBotUpdateProcessing, AutoCloseable {
+public abstract class TelegramBotService<Client extends DefaultAbsSender> implements TelegramBotUpdateProcessing, AutoCloseable {
     private final ConcurrentHashMap<String, UpdateHandler> messageUpdateHandlers = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, UpdateHandler> callbackQueryHandlers = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, UpdateHandler> inlineQueryHandlers = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, UpdateHandler> chosenInlineQueryHandlers = new ConcurrentHashMap<>();
 
-    public abstract DefaultAbsSender getClient();
+    public abstract Client client();
 
     @Override
     public TelegramBotUpdateProcessing callBackQuery(@NotNull String trigger, @NotNull UpdateHandler handler) {
@@ -52,7 +52,7 @@ public abstract class TelegramBotService implements TelegramBotUpdateProcessing,
     static final Predicate<Update> MESSAGE_CONDITION =
             MESSAGE.or(EDITED_MESSAGE).or(CHANNEL_POST).or(EDITED_CHANNEL_POST);
     @Override
-    public Optional<BotApiMethod<?>> updateProcess(Update update) {
+    public Optional<BotApiMethod<?>> update(Update update) {
         if (MESSAGE_CONDITION.test(update)) {
             return messageUpdateHandlers
                     .get(update.getMessage().getText())

@@ -13,7 +13,7 @@ public interface UpdateHandler {
         return new EmptyActionHandler();
     }
 
-    class EmptyActionHandler implements UpdateHandler {
+    final class EmptyActionHandler implements UpdateHandler {
 
         @Override
         public Optional<BotApiMethod<?>> execute(Update update) {

@@ -1,28 +1,36 @@
 package com.immmus.standard.telegram.bot;
 
-import com.immmus.standard.telegram.bot.utils.TelegramBotBuilder;
+import com.immmus.standard.telegram.bot.settings.LongPollBotSettings;
 import lombok.extern.slf4j.Slf4j;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @Slf4j
-public class LongPollingTelegramBotService extends TelegramBotService {
+final public class LongPollTelegramBotService extends TelegramBotService<TelegramLongPollingBot> {
     private final ExecutorService executor;
     private final TelegramLongPollingBot client;
 
-    public LongPollingTelegramBotService(TelegramBotBuilder builder) {
-        this.executor = Executors.newCachedThreadPool();
-        this.client =  new TelegramBot(builder);
+    public LongPollTelegramBotService(LongPollBotSettings settings,
+                                      DefaultBotOptions defaultBotOptions,
+                                      ExecutorService executorService) {
+        this.executor = executorService;
+        this.client =  new TelegramBot(settings, defaultBotOptions);
+    }
+
+    public LongPollTelegramBotService(LongPollBotSettings settings, ExecutorService executorService) {
+        this(settings, settings.defaultBotOptions(), executorService);
+    }
+
+    public LongPollTelegramBotService(LongPollBotSettings settings) {
+        this(settings, settings.defaultBotOptions(), Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 
     @Override
-    public TelegramLongPollingBot getClient() {
+    public TelegramLongPollingBot client() {
         return this.client;
     }
 
@@ -46,21 +54,21 @@ public class LongPollingTelegramBotService extends TelegramBotService {
     }
 
     private class TelegramBot extends TelegramLongPollingBot {
-        private final String name;
+        private final String botUsername;
         private final String token;
 
-        public TelegramBot(TelegramBotBuilder builder) {
-            super(builder.getDefaultBotOptions());
-            this.name = builder.getUsername();
-            this.token = builder.getToken();
+        public TelegramBot(LongPollBotSettings settings, DefaultBotOptions defaultBotOptions) {
+            super(defaultBotOptions);
+            this.botUsername = settings.botUsername();
+            this.token = settings.token();
         }
 
         @Override
         public void onUpdateReceived(Update update) {
             CompletableFuture.runAsync(() ->
-                    updateProcess(update).ifPresent(result -> {
+                    update(update).ifPresent(result -> {
                         try {
-                            getClient().execute(result);
+                            client().execute(result);
                             log.debug("Update: {}. Message: {}. Successfully sent", update, result);
                         } catch (TelegramApiException e) {
                             log.error("Update: {}. Can not send message {} to telegram: ", update, result, e);
@@ -70,7 +78,7 @@ public class LongPollingTelegramBotService extends TelegramBotService {
 
         @Override
         public String getBotUsername() {
-            return this.name;
+            return this.botUsername;
         }
 
         @Override
