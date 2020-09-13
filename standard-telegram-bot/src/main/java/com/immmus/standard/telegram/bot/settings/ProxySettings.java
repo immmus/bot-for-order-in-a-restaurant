@@ -14,18 +14,18 @@ public interface ProxySettings {
     Optional<String> username();
     Optional<String> password();
 
-    final class FreeProxy implements ProxySettings {
+    final class Free implements ProxySettings {
         private final int port;
         private final String host;
         private final DefaultBotOptions.ProxyType type;
 
-        public FreeProxy(int port, String host, DefaultBotOptions.ProxyType type) {
+        public Free(int port, String host, DefaultBotOptions.ProxyType type) {
             this.port = port;
             this.host = host;
             this.type = type;
         }
 
-        public FreeProxy(int port, String host) {
+        public Free(int port, String host) {
             this(port, host, DEFAULT_PROXY_TYPE);
         }
 
@@ -64,17 +64,17 @@ public interface ProxySettings {
         }
     }
 
-    final class PrivateProxySettings implements ProxySettings {
+    final class Private implements ProxySettings {
         private final int port;
         private final String host;
         private final DefaultBotOptions.ProxyType type;
         private final String username;
         private final String password;
 
-        public PrivateProxySettings(int port,
-                                    String host,
-                                    String username, String password,
-                                    DefaultBotOptions.ProxyType type) {
+        public Private(int port,
+                       String host,
+                       String username, String password,
+                       DefaultBotOptions.ProxyType type) {
             this.port = port;
             this.host = host;
             this.type = type;
@@ -82,7 +82,7 @@ public interface ProxySettings {
             this.password = password;
         }
 
-        public PrivateProxySettings(int port, String host, String username, String password) {
+        public Private(int port, String host, String username, String password) {
             this(port, host, username, password, DEFAULT_PROXY_TYPE);
         }
 
