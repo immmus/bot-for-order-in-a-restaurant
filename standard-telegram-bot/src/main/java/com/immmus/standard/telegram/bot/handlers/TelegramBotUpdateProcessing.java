@@ -7,12 +7,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Optional;
 
 public interface TelegramBotUpdateProcessing extends HandlerBuilder<TelegramBotUpdateProcessing> {
-    default TelegramBotUpdateProcessing processes(@NotNull HandlersGroup handlersGroup) {
-        UpdateProcessesBuilder.setUpdateProcessing(this);
+    default void addProcesses(@NotNull HandlersGroup handlersGroup) {
+        UpdateProcesses.addUpdateProcesses(this);
         handlersGroup.addHandlers();
-        UpdateProcessesBuilder.clearUpdateProcessing();
-        return this;
+        UpdateProcesses.clearUpdateProcessing();
     }
 
-    Optional<BotApiMethod<?>> updateProcess(Update update);
+    Optional<BotApiMethod<?>> update(Update update);
 }
