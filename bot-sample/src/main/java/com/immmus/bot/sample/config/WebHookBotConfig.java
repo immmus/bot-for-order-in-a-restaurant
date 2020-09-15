@@ -21,20 +21,19 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 @Profile({"DEFAULT_WEBHOOK_BOT", "FREE_PROXY_WEBHOOK_BOT", "PRIVATE_PROXY_WEBHOOK_BOT"})
 public class WebHookBotConfig extends BotConfig<TelegramWebhookBot, WebHookBotSettings> {
     @Value("${bot.webhook.path:unknown}")
-    protected String webHookPath;
+    private String webHookPath;
 
     @Override
-    public TelegramBotService<TelegramWebhookBot> registerBot(@Qualifier("WebHookBotSettings") WebHookBotSettings settings) {
+    public TelegramBotService<TelegramWebhookBot> createBot(@Qualifier("WebHookBotSettings") WebHookBotSettings settings) throws TelegramApiRequestException {
         final var api = new TelegramBotsApi();
-        final var telegramBotService = new WebHookTelegramBotService(settings);
-        try {
+        try (final var telegramBotService = new WebHookTelegramBotService(settings)) {
             api.registerBot(telegramBotService.client());
             log.info("{} is registered.", telegramBotService.client().getBotUsername());
+            return telegramBotService;
         } catch (TelegramApiRequestException e) {
-            log.error("There was a problem registering the bot. With {}", settings, e);
-            System.exit(1);
+            log.error("There was a problem registering the bot. With {}", settings);
+            throw e;
         }
-        return telegramBotService;
     }
 
     @Bean("WebHookBotSettings")

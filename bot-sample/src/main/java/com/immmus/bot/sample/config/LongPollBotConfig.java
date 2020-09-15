@@ -23,17 +23,16 @@ public class LongPollBotConfig extends BotConfig<TelegramLongPollingBot, LongPol
 
     @Bean
     @Override
-    public TelegramBotService<TelegramLongPollingBot> registerBot(@Qualifier("LongPollBotSettings") LongPollBotSettings settings) {
+    public TelegramBotService<TelegramLongPollingBot> createBot(@Qualifier("LongPollBotSettings") LongPollBotSettings settings) throws TelegramApiRequestException {
         final var api = new TelegramBotsApi();
-        final var telegramBotService = new LongPollTelegramBotService(settings);
-        try {
+        try (final var telegramBotService = new LongPollTelegramBotService(settings)) {
             api.registerBot(telegramBotService.client());
             log.info("{} is registered.", telegramBotService.client().getBotUsername());
+            return telegramBotService;
         } catch (TelegramApiRequestException e) {
-            log.error("There was a problem registering the bot. With {}", settings, e);
-            System.exit(1);
+            log.error("There was a problem registering the bot. With {}", settings);
+            throw e;
         }
-        return telegramBotService;
     }
 
     @Bean("LongPollBotSettings")
