@@ -23,10 +23,12 @@ public class WebHookBotConfig extends BotConfig<TelegramWebhookBot, WebHookBotSe
     @Value("${bot.webhook.path:unknown}")
     private String webHookPath;
 
+    @Bean(destroyMethod = "close")
     @Override
     public TelegramBotService<TelegramWebhookBot> createBot(@Qualifier("WebHookBotSettings") WebHookBotSettings settings) throws TelegramApiRequestException {
         final var api = new TelegramBotsApi();
-        try (final var telegramBotService = new WebHookTelegramBotService(settings)) {
+        try{
+            final var telegramBotService = new WebHookTelegramBotService(settings);
             api.registerBot(telegramBotService.client());
             log.info("{} is registered.", telegramBotService.client().getBotUsername());
             return telegramBotService;

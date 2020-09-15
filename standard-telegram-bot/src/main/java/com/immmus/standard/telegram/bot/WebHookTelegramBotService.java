@@ -26,7 +26,7 @@ final public class WebHookTelegramBotService extends TelegramBotService<Telegram
 
     @Override
     public void close() {
-        //nothing
+        log.info("{} is terminated", getClass().getSimpleName());
     }
 
     private class TelegramBot extends TelegramWebhookBot {
