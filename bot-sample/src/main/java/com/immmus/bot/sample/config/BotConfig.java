@@ -2,10 +2,13 @@ package com.immmus.bot.sample.config;
 
 import com.immmus.standard.telegram.bot.TelegramBotService;
 import com.immmus.standard.telegram.bot.settings.TelegramBotSettings;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
+@Slf4j
 @PropertySource(value = "${bot.config.source}")
 abstract public class BotConfig<Bot extends DefaultAbsSender, BotSettings extends TelegramBotSettings> {
     @Value("${bot.name:unknown}")
@@ -24,5 +27,5 @@ abstract public class BotConfig<Bot extends DefaultAbsSender, BotSettings extend
     protected String proxyType;
     @Value("${bot.type:DEFAULT_LONG_POLLING_BOT}")
 
-    abstract public TelegramBotService<Bot> registerBot(BotSettings settings);
+    abstract public TelegramBotService<Bot> createBot(BotSettings settings) throws TelegramApiRequestException;
 }
