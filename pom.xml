@@ -20,8 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <lombok.version>1.18.12</lombok.version>
-        <spring.boot.version>2.2.5.RELEASE</spring.boot.version>
-        <persistence.api.version>2.2.3</persistence.api.version>
+        <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
         <postgresql.version>42.2.5</postgresql.version>
         <!--Logging-->
         <logback-classic.version>1.2.3</logback-classic.version>
