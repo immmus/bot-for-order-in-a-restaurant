@@ -51,6 +51,7 @@ final public class LongPollTelegramBotService extends TelegramBotService<Telegra
             int droppedTasks = executor.shutdownNow().size();
             log.error("Executor was abruptly shut down. {} tasks will not be executed", droppedTasks);
         }
+        log.info("{} is terminated", getClass().getSimpleName());
     }
 
     private class TelegramBot extends TelegramLongPollingBot {

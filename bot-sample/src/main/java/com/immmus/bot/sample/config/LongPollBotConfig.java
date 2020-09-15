@@ -21,11 +21,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 @Profile({"FREE_PROXY_LONG_POLLING_BOT", "PRIVATE_PROXY_LONG_POLLING_BOT", "DEFAULT_LONG_POLLING_BOT", Heroku.profile})
 public class LongPollBotConfig extends BotConfig<TelegramLongPollingBot, LongPollBotSettings> {
 
-    @Bean
+    @Bean(destroyMethod = "close")
     @Override
     public TelegramBotService<TelegramLongPollingBot> createBot(@Qualifier("LongPollBotSettings") LongPollBotSettings settings) throws TelegramApiRequestException {
         final var api = new TelegramBotsApi();
-        try (final var telegramBotService = new LongPollTelegramBotService(settings)) {
+        try {
+            final var telegramBotService = new LongPollTelegramBotService(settings);
             api.registerBot(telegramBotService.client());
             log.info("{} is registered.", telegramBotService.client().getBotUsername());
             return telegramBotService;
