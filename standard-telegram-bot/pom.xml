@@ -13,7 +13,7 @@
     <version>${current.project.version}</version>
 
     <properties>
-        <telegram.api.version>4.6</telegram.api.version>
+        <telegram.api.version>4.9.1</telegram.api.version>
     </properties>
 
     <dependencies>
