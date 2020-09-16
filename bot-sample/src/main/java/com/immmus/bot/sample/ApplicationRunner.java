@@ -1,6 +1,5 @@
 package com.immmus.bot.sample;
 
-import com.immmus.bot.sample.handlers.CallbackQueryHandler;
 import com.immmus.bot.sample.handlers.MessageHandler;
 import com.immmus.standard.telegram.bot.TelegramBotService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.ApiContextInitializer;
 
-import static com.immmus.bot.sample.factories.KeyboardFactory.ButtonActions.CLOSE;
+import static com.immmus.bot.sample.handlers.actions.ActionInlineButtons.ACCEPT;
+import static com.immmus.bot.sample.handlers.actions.ActionInlineButtons.CLOSE;
 import static com.immmus.standard.telegram.bot.handlers.UpdateProcesses.callBackQuery;
 import static com.immmus.standard.telegram.bot.handlers.UpdateProcesses.message;
 
@@ -35,7 +35,8 @@ public class ApplicationRunner implements CommandLineRunner {
     public void run(String... args) {
         this.bot.addProcesses(() -> {
             message("/start", MessageHandler::greeting);
-            callBackQuery(CLOSE.callbackData, CallbackQueryHandler::closeButton);
+            callBackQuery(CLOSE.callbackData, CLOSE.action());
+            callBackQuery(ACCEPT.callbackData, ACCEPT.action());
         });
     }
 }
